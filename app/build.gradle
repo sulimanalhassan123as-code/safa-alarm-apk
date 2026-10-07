@@ -1,0 +1,35 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.safa.alarm'
+    compileSdk 34
+    defaultConfig {
+        applicationId "com.safa.alarm"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+        buildConfigField "String", "SECRET", "\"" + (System.getenv('SAFA_ALARM_SECRET') ?: "") + "\""
+    }
+    buildFeatures { buildConfig true }
+    signingConfigs {
+        release {
+            storeFile rootProject.file('safa-alarm.jks')
+            storePassword 'safaalarm'
+            keyAlias 'safa'
+            keyPassword 'safaalarm'
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+        }
+    }
+    lint { checkReleaseBuilds false; abortOnError false }
+}
+
+dependencies {}

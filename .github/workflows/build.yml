@@ -1,0 +1,21 @@
+name: Build Safa Alarm APK
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.7'
+      - name: Restore signing keystore
+        run: echo "$SAFA_JKS_B64" | base64 -d > safa-alarm.jks
+      - run: gradle assembleRelease --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: safa-alarm-apk
+          path: app/build/outputs/apk/release/app-release.apk
