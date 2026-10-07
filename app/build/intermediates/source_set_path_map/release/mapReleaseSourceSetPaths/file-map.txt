@@ -1,0 +1,7 @@
+com.safa.alarm.app-pngs-0 /tmp/safa-alarm/app/build/generated/res/pngs/release
+com.safa.alarm.app-resValues-1 /tmp/safa-alarm/app/build/generated/res/resValues/release
+com.safa.alarm.app-packageReleaseResources-2 /tmp/safa-alarm/app/build/intermediates/incremental/release/packageReleaseResources/merged.dir
+com.safa.alarm.app-packageReleaseResources-3 /tmp/safa-alarm/app/build/intermediates/incremental/release/packageReleaseResources/stripped.dir
+com.safa.alarm.app-release-4 /tmp/safa-alarm/app/build/intermediates/merged_res/release/mergeReleaseResources
+com.safa.alarm.app-main-5 /tmp/safa-alarm/app/src/main/res
+com.safa.alarm.app-release-6 /tmp/safa-alarm/app/src/release/res

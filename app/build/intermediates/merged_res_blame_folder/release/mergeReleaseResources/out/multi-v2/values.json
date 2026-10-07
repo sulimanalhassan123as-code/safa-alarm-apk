@@ -1,0 +1,45 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.safa.alarm.app-mergeReleaseResources-2:/values/values.xml",
+            "map": [
+                {
+                    "source": "/tmp/safa-alarm/app/src/main/res/values/colors.xml",
+                    "from": {
+                        "startLines": "2,1",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,16",
+                        "endColumns": "38,38",
+                        "endOffsets": "89,50"
+                    },
+                    "to": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,94",
+                        "endColumns": "38,38",
+                        "endOffsets": "89,128"
+                    }
+                },
+                {
+                    "source": "/tmp/safa-alarm/app/src/main/res/values/styles.xml",
+                    "from": {
+                        "startLines": "4,1",
+                        "startColumns": "4,4",
+                        "startOffsets": "166,16",
+                        "endLines": "7,3",
+                        "endColumns": "12,12",
+                        "endOffsets": "368,161"
+                    },
+                    "to": {
+                        "startLines": "4,8",
+                        "startColumns": "4,4",
+                        "startOffsets": "133,340",
+                        "endLines": "7,10",
+                        "endColumns": "12,12",
+                        "endOffsets": "335,485"
+                    }
+                }
+            ]
+        }
+    ]
+}

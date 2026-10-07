@@ -1,0 +1,7 @@
+int color gold 0x7f010000
+int color navy 0x7f010001
+int drawable ic_launcher_fg 0x7f020000
+int mipmap ic_launcher 0x7f030000
+int raw alarm 0x7f040000
+int style AlarmTheme 0x7f050000
+int style AppTheme 0x7f050001

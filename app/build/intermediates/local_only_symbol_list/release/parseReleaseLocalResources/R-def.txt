@@ -1,0 +1,9 @@
+R_DEF: Internal format may change without notice
+local
+color gold
+color navy
+drawable ic_launcher_fg
+mipmap ic_launcher
+raw alarm
+style AlarmTheme
+style AppTheme

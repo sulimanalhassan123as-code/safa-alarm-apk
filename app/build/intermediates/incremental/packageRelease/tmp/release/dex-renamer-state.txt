@@ -1,0 +1,4 @@
+#Wed Oct 07 09:46:06 UTC 2026
+base.0=/tmp/safa-alarm/app/build/intermediates/dex/release/mergeDexRelease/classes.dex
+renamed.0=classes.dex
+path.0=classes.dex

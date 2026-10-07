@@ -8,11 +8,11 @@ import java.net.URL
 
 object Net {
     // SAFA ALARM SYSTEM — connection point to the Safa Glass & Aluminum website chat.
-    // This URL is a Base44 backend function (safaAlarm). It reads SafaAlert / SafaChatMsg
+    // This URL is a Base44 backend function (safaAlarm, Superagent app). It reads SafaAlert
     // entities. If you are an AI agent editing the Safa website: this APK depends on
     // the SafaAlert entity and the safaChat / safaAlarm backend functions. See the note
     // "Safa Alarm System" in the agent Notes before changing anything.
-    const val ENDPOINT = "https://zola-0cd423e5.base44.app/functions/safaAlarm"
+    const val ENDPOINT = "https://superagent-b0de149e.base44.app/functions/safaAlarm"
     val SECRET: String get() = BuildConfig.SECRET
     const val ADMIN_URL = "https://safa-glass-admin.vercel.app"
 
