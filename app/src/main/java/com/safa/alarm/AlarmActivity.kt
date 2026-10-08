@@ -23,6 +23,8 @@ class AlarmActivity : Activity() {
     private var player: MediaPlayer? = null
     private var vibrator: Vibrator? = null
     private var alertId = ""
+    private var origVolume = -1
+    private var silenceHandler: android.os.Handler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,10 +94,12 @@ class AlarmActivity : Activity() {
 
         setContentView(root)
 
-        // ring loudly
+        // ring at a sane volume (65% of max) — full volume destroys speakers
         val am = getSystemService(AUDIO_SERVICE) as AudioManager
         try {
-            am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0)
+            origVolume = am.getStreamVolume(AudioManager.STREAM_ALARM)
+            val target = (am.getStreamMaxVolume(AudioManager.STREAM_ALARM) * 0.65).toInt().coerceAtLeast(1)
+            am.setStreamVolume(AudioManager.STREAM_ALARM, target, 0)
         } catch (_: Exception) { }
         val attrs = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ALARM)
@@ -118,19 +122,35 @@ class AlarmActivity : Activity() {
             }
         }
         vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-        val pattern = longArrayOf(0, 800, 400, 800, 400)
+        val pattern = longArrayOf(0, 600, 600, 600)
         if (Build.VERSION.SDK_INT >= 26) {
-            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
+            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
         } else {
-            @Suppress("DEPRECATION") vibrator?.vibrate(pattern, 0)
+            @Suppress("DEPRECATION") vibrator?.vibrate(pattern, -1)
         }
+
+        // auto-silence after 2 minutes so it never screams forever
+        silenceHandler = android.os.Handler(android.os.Looper.getMainLooper())
+        silenceHandler?.postDelayed({
+            try { player?.pause() } catch (_: Exception) { }
+            try { vibrator?.cancel() } catch (_: Exception) { }
+            findViewById<TextView>(android.R.id.text1)?.let { }
+        }, 120_000L)
     }
 
     private fun stopEverything(ack: Boolean) {
+        silenceHandler?.removeCallbacksAndMessages(null)
         try { player?.stop() } catch (_: Exception) { }
         try { player?.release() } catch (_: Exception) { }
         player = null
         vibrator?.cancel()
+        if (origVolume >= 0) {
+            try {
+                val am = getSystemService(AUDIO_SERVICE) as AudioManager
+                am.setStreamVolume(AudioManager.STREAM_ALARM, origVolume, 0)
+            } catch (_: Exception) { }
+            origVolume = -1
+        }
         if (ack && alertId.isNotEmpty()) {
             Thread {
                 try { Net.call(this, "ack", org.json.JSONObject().put("alert_id", alertId)) } catch (_: Exception) { }

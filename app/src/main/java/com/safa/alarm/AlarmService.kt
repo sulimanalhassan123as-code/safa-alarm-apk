@@ -10,6 +10,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
+import android.net.Uri
 import android.os.IBinder
 import android.os.SystemClock
 import org.json.JSONArray
@@ -111,13 +112,20 @@ class AlarmService : Service() {
             putExtra("text", text)
             putExtra("alert_id", id)
         }
-        try { startActivity(i) } catch (_: Exception) { }
+        // With "display over other apps" granted this launches over anything, even the lock screen.
+        // Without it Android 10+ blocks background launches -> falls back to the full-screen notification.
+        try {
+            if (android.provider.Settings.canDrawOverlays(this)) startActivity(i)
+        } catch (_: Exception) { }
 
         // full-screen notification fallback (rings over lock screen like a call)
         if (Build.VERSION.SDK_INT >= 26) {
             val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val ch = NotificationChannel("safa_alarm", "Safa Alarm", NotificationManager.IMPORTANCE_HIGH)
-            ch.setSound(null, null)
+            val sound = Uri.parse("android.resource://" + packageName + "/" + R.raw.alarm)
+            ch.setSound(sound, android.media.AudioAttributes.Builder()
+                .setUsage(android.media.AudioAttributes.USAGE_ALARM).build())
+            ch.enableVibration(true)
             ch.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             nm.createNotificationChannel(ch)
             val pi = PendingIntent.getActivity(this, 0, i,

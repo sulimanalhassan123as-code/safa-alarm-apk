@@ -22,6 +22,16 @@ class MainActivity : Activity() {
         if (Build.VERSION.SDK_INT >= 33) {
             requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
         }
+        // CRITICAL: without "display over other apps" Android blocks the alarm screen from
+        // launching by itself -> you only get a silent notification. Open the settings now.
+        if (!android.provider.Settings.canDrawOverlays(this)) {
+            try {
+                startActivity(android.content.Intent(
+                    android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:com.safa.alarm")
+                ))
+            } catch (_: Exception) { }
+        }
 
         val pad = (resources.displayMetrics.density * 20).toInt()
         val scroll = ScrollView(this)
@@ -35,8 +45,9 @@ class MainActivity : Activity() {
             setTextColor(0xFF1a3a5c.toInt())
         }
         val status = TextView(this).apply {
-            text = "Customer watch service starting...\nThis app rings loudly whenever a customer " +
+            text = "Customer watch service starting...\nThis app rings whenever a customer " +
                 "on the website asks for a price, requests the owner, or the chat gets serious.\n\n" +
+                "IMPORTANT: for the alarm to ring over the lock screen by itself, allow it under \"Display over other apps\" (the setting opens automatically on first launch).\n\n" +
                 "Keep it installed on this phone only. The service runs in the background " +
                 "and shows a small ongoing notification."
             textSize = 15f
@@ -61,6 +72,15 @@ class MainActivity : Activity() {
                 try { Net.call(this, "test") } catch (_: Exception) {}
             }.start()
             status.text = "Test alarm sent. Your phone should ring within 20 seconds..."
+        }
+
+        btn("Allow alarm over other apps (FIXES silent alarms)") {
+            try {
+                startActivity(android.content.Intent(
+                    android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:com.safa.alarm")
+                ))
+            } catch (_: Exception) { }
         }
 
         btn("Open Admin Chat") {
