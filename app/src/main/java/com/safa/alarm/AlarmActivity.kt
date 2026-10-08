@@ -98,20 +98,21 @@ class AlarmActivity : Activity() {
         val am = getSystemService(AUDIO_SERVICE) as AudioManager
         try {
             origVolume = am.getStreamVolume(AudioManager.STREAM_ALARM)
-            val target = (am.getStreamMaxVolume(AudioManager.STREAM_ALARM) * 0.65).toInt().coerceAtLeast(1)
+            val target = (am.getStreamMaxVolume(AudioManager.STREAM_ALARM) * 0.55).toInt().coerceAtLeast(1)
             am.setStreamVolume(AudioManager.STREAM_ALARM, target, 0)
         } catch (_: Exception) { }
         val attrs = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ALARM)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
+        val soundRes = Sfx.resId(Prefs.soundName(this))
         player = if (Build.VERSION.SDK_INT >= 26) {
-            MediaPlayer.create(this, R.raw.alarm, attrs, 0).apply {
+            MediaPlayer.create(this, soundRes, attrs, 0).apply {
                 isLooping = true
                 start()
             }
         } else {
-            val afd = resources.openRawResourceFd(R.raw.alarm)
+            val afd = resources.openRawResourceFd(soundRes)
             MediaPlayer().apply {
                 setAudioAttributes(attrs)
                 setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
@@ -129,8 +130,24 @@ class AlarmActivity : Activity() {
             @Suppress("DEPRECATION") vibrator?.vibrate(pattern, -1)
         }
 
-        // auto-silence after 2 minutes so it never screams forever
         silenceHandler = android.os.Handler(android.os.Looper.getMainLooper())
+
+        // gentle ramp-in: 20% -> 100% over ~2.5s
+        try {
+            player?.setVolume(0.2f, 0.2f)
+            var step = 0
+            val ramp = object : Runnable {
+                override fun run() {
+                    step++
+                    val v = (0.2f + 0.8f * (step / 12f)).coerceAtMost(1f)
+                    try { player?.setVolume(v, v) } catch (_: Exception) { }
+                    if (step < 12) silenceHandler?.postDelayed(this, 200)
+                }
+            }
+            silenceHandler?.postDelayed(ramp, 200)
+        } catch (_: Exception) { }
+
+        // auto-silence after 2 minutes so it never screams forever
         silenceHandler?.postDelayed({
             try { player?.pause() } catch (_: Exception) { }
             try { vibrator?.cancel() } catch (_: Exception) { }

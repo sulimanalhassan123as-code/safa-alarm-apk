@@ -121,8 +121,10 @@ class AlarmService : Service() {
         // full-screen notification fallback (rings over lock screen like a call)
         if (Build.VERSION.SDK_INT >= 26) {
             val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            // channels pin their sound at creation: recreate so the chosen tone always applies
+            nm.deleteNotificationChannel("safa_alarm")
             val ch = NotificationChannel("safa_alarm", "Safa Alarm", NotificationManager.IMPORTANCE_HIGH)
-            val sound = Uri.parse("android.resource://" + packageName + "/" + R.raw.alarm)
+            val sound = Uri.parse("android.resource://" + packageName + "/" + Sfx.resId(Prefs.soundName(this)))
             ch.setSound(sound, android.media.AudioAttributes.Builder()
                 .setUsage(android.media.AudioAttributes.USAGE_ALARM).build())
             ch.enableVibration(true)

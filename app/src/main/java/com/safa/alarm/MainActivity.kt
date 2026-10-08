@@ -13,6 +13,15 @@ import android.widget.TextView
 import java.util.UUID
 
 class MainActivity : Activity() {
+
+    private var preview: android.media.MediaPlayer? = null
+
+    private fun stopPreview() {
+        try { preview?.stop() } catch (_: Exception) { }
+        try { preview?.release() } catch (_: Exception) { }
+        preview = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -87,6 +96,29 @@ class MainActivity : Activity() {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(Net.ADMIN_URL)))
         }
 
+        // ---- Alarm sound picker ----
+        root.addView(TextView(this).apply {
+            text = "Alarm sound (tap to hear & set)"
+            textSize = 18f
+            setTextColor(0xFF1a3a5c.toInt())
+            setPadding(0, pad, 0, pad / 2)
+        })
+        val soundStatus = TextView(this).apply {
+            text = "Current: " + Sfx.displayName(Prefs.soundName(this@MainActivity))
+            textSize = 14f
+            setPadding(0, 0, 0, pad / 2)
+        }
+        for ((id, label, desc) in Sfx.OPTIONS) {
+            btn("🔔  $label — $desc") {
+                Prefs.setSoundName(this, id)
+                stopPreview()
+                preview = android.media.MediaPlayer.create(this, Sfx.resId(id))
+                preview?.start()
+                soundStatus.text = "Current: " + Sfx.displayName(id) + " (saved)"
+            }
+        }
+        root.addView(soundStatus)
+
         btn("Allow alarm in battery settings (important)") {
             try {
                 startActivity(Intent(
@@ -107,6 +139,7 @@ class MainActivity : Activity() {
         scroll.addView(root)
         setContentView(scroll)
 
+        stopPreview()
         // register + start service
         Thread {
             try { Net.call(this, "register", org.json.JSONObject().put("name", android.os.Build.MODEL)) } catch (_: Exception) {}

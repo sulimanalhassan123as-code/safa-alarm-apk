@@ -15,4 +15,7 @@ object Prefs {
     }
     fun firstRun(ctx: Context): Boolean = c(ctx).getBoolean("first_run", true)
     fun setFirstRun(ctx: Context, b: Boolean) { c(ctx).edit().putBoolean("first_run", b).apply() }
+
+    fun soundName(ctx: Context): String = c(ctx).getString("sound_name", "bells") ?: "bells"
+    fun setSoundName(ctx: Context, n: String) { c(ctx).edit().putString("sound_name", n).apply() }
 }
