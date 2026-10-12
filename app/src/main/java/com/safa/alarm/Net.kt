@@ -8,11 +8,12 @@ import java.net.URL
 
 object Net {
     // SAFA ALARM SYSTEM — connection point to the Safa Glass & Aluminum website chat.
-    // This URL is a Base44 backend function (safaAlarm, Superagent app). It reads SafaAlert
-    // entities. If you are an AI agent editing the Safa website: this APK depends on
-    // the SafaAlert entity and the safaChat / safaAlarm backend functions. See the note
-    // "Safa Alarm System" in the agent Notes before changing anything.
-    const val ENDPOINT = "https://superagent-b0de149e.base44.app/functions/safaAlarm"
+    // Backend moved home to the Zola app (zola-0cd423e5) on Oct 8, 2026 — this APK was
+    // repointed accordingly. The safaAlarm function there implements the full protocol:
+    // register / poll / ack / test (secret 'safa-alarm-2026') + alert (public, website).
+    // If you are an AI agent editing the Safa system: do NOT change this URL without
+    // also updating the SafaAlert / SafaDevice entities and the Safa Owner Alarm workflow.
+    const val ENDPOINT = "https://zola-0cd423e5.base44.app/functions/safaAlarm"
     val SECRET: String get() = BuildConfig.SECRET
     const val ADMIN_URL = "https://safa-glass-admin.vercel.app"
 
